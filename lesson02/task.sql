@@ -24,17 +24,30 @@ select count(distinct object_type) from dba_objects;
 select distinct object_type from dba_objects;
 
 --Kik azok a felhasználók, akiknek több mint 10 féle objektumuk van?
-select owner, count(distinct object_type) from dba_objects group by owner having count(distinct object_type) > 10 order by owner;
+select owner, count(distinct object_type) 
+from dba_objects group by owner 
+having count(distinct object_type) > 10 
+order by owner;
 
 --Kik azok a felhasználók, akiknek van triggere és nézete is?
-select * from dba_objects;
+select owner from dba_objects where object_type = 'VIEW'
+union
+select owner from dba_objects where object_type = 'TRIGGER';
+-- ! Az union alapesetben végrehajt egy distinctet, ha union all-t használunk akkor nem.
 
 --Kik azok a felhasználók, akiknek van nézete, de nincs triggere?
+select owner from dba_objects where object_type = 'VIEW'
+minus
+select owner from dba_objects where object_type = 'TRIGGER';
 
 --Kik azok a felhasználók, akiknek több mint 40 táblájuk, de maximum 37 indexük van?
+select owner from dba_objects where object_type = 'TABLE' group by owner having count(*) > 40
+minus
+select owner from dba_objects where object_type = 'INDEX' group by owner having count(*) > 37;
 
 --Melyek azok az objektum típusok, amelyek tényleges tárolást igényelnek, vagyis
 --tartoznak hozzájuk adatblokkok? (A többinek csak a definíciója tárolódik adatszótárban)
+
 
 --Melyek azok az objektum típusok, amelyek nem igényelnek tényleges tárolást, vagyis nem
 --tartoznak hozzájuk adatblokkok? (Ezeknek csak a definíciója tárolódik adatszótárban)
@@ -45,10 +58,19 @@ select * from dba_objects;
 -----------------
 --(DBA_TAB_COLUMNS)
 
+select * from sila.emp;
+desc sila.emp;
+select * from dba_tab_columns;
+
+select * from user_tab_columns;
+
 --Hány oszlopa van a nikovits.emp táblának?
+select count(*) from dba_tab_columns where lower(table_name) = 'emp' and lower(owner) = 'nikovits';
 
 --Milyen típusú a nikovits.emp tábla 6. oszlopa?
-
+select data_type, data_precision, data_scale  from dba_tab_columns where lower(table_name) = 'emp' and lower(owner) = 'nikovits' and column_id = 2;
+select data_type from dba_tab_columns where lower(table_name) = 'emp' and lower(owner) = 'nikovits' and column_id = 6;
+select data_type, data_precision, data_scale from dba_tab_columns where lower(table_name) = 'emp' and lower(owner) = 'nikovits' and column_id = 6;
 --Adjuk meg azoknak a tábláknak a tulajdonosát és nevét, amelyeknek van 'Z' betûvel 
 --kezdõdõ oszlopa.
 
