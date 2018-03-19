@@ -1,0 +1,69 @@
+1. Feladat
+----------
+Van egy R táblánk, egy I1 sûrû és egy I2 ritka indexünk az alábbi paraméterekkel:
+T(R) = 10000, bf(R) = 20, bf(I1) = 100, bf(I2) = 100
+Számoljuk ki a következõket:
+B(R)  = ?   -> T(R)/bf(R)
+B(I1) = ?   -> T(I1)/bf(I1)  I1 sûrû  (!)
+B(I2) = ?   -> T(I2)/bf(I2)  I2 ritka (!)
+
+
+2. feladat
+----------
+Számoljuk ki az elõzõ feladatbeli értékeket, ha a blokkok csak 80%-ban lehetnek tele.
+
+
+3. Feladat
+----------
+T(R) = 1000000, bf(R) = 20, egy kulcs oszlopra készítünk B+ fa indexet, amelyre bf(I) = 50. 
+Számoljuk ki a következõket:
+B(I) = ?    (segítség: vizsgáljuk meg az indexet szintenként)
+
+Mennyi a mûveletigénye blokkolvasásokban egy A = c típusú keresésnek (legrosszabb esetben) ha
+a) a tábla sorai rendezetlenül vannak tárolva és nem használunk indexet  -> B(R)
+b) a tábla sorai rendezetten vannak tárolva és nem használunk indexet    -> log2(B(R))
+c) a fenti B+ fa indexet használjuk.                                     -> ht(I) + 1
+
+
+4. Feladat  (output_estimate.ppt 17. old.)
+----------
+T(R) = 1000000, V(R,A) = 500, V(R,B) = 1000
+Számoljuk ki T(W)-t az egyenletességi feltételezéssel élve, ha W a következõ lekérdezés eredménye:
+a) W <-- SELECT * FROM R WHERE A=x;           -> T(R)/V(R,A) 
+b) W <-- SELECT * FROM R WHERE A=x AND B=y;   -> T(R)*(1/V(R,A))*(1/V(R,B))
+c) W <-- SELECT * FROM R WHERE A=x OR B=y;    -> T(R)*(1-[1-1/V(R,A)]*[1-1/V(R,B)])
+
+Átalakítás után:  V(R,A) -> v1, V(R,B) -> v2 
+T*[1-(1-1/v1)*(1-1/v2)] = T*[(v1*v2)/(v1*v2) - (v1-1)*(v2-1)/(v1*v2)] =
+= T*[(v1 + v2 -1)/(v1*v2)] = T/v2 + T/v1 - T/(v1*v2)
+
+5. Feladat  (output_estimate.ppt 13-16. old.)
+----------
+T(R) = 10000, T(S) = 4000, a két tábla közös oszlopa: A, ahol ugyanazok az értékek fordulnak elõ.
+V(R,A) = 500, V(S,A) = 500.
+Számoljuk ki T(W)-t ha W a következõ lekérdezés eredménye:
+a) W <-- SELECT * FROM R CROSS JOIN S;    -> T(R)*T(S)
+b) W <-- SELECT * FROM R NATURAL JOIN S;  -> T(R)*T(S)/V(R,A)
+
+
+6. Feladat  (optimization.ppt a) 28-29., b) 32., c) 21. és 31. old., operation_cost_examples.ppt)
+----------  
+Tegyük fel, hogy a memóriánk 101 blokknyi (M=101), és van egy 1000000 soros R táblánk
+T(R) = 1000000, amelynek 10 sora fér el egy blokkban bf(R) = 10, valamint egy 60000 soros S táblánk, 
+T(S) = 60000, amelynek 12 sora fér el egy blokkban bf(S) = 12. 
+Mennyi a blokkolvasási és írási költsége (I/O költsége) egy egyenlõséges összekapcsolás mûveletnek 
+(WHERE R.A = S.A) az alábbi algoritmusok esetén:
+a) beágyazott ciklusú algoritmus (block-nested loop)  -> B(S)/(M-1)*B(R) + B(S)
+b) HASH alapú algoritmus (hash-join)                  -> 3*[B(S)+B(R)]
+c) RENDEZÉS alapú algoritmus (sort-merge join)        -> (Menetek száma)*[2*B(S)+2*B(R)] + B(S)+B(R)
+   ahol a Menetek száma különbözõ lehet a két relációra, és a következõ képlettel becsülhetõ:
+   log[B(R)/M] felsõ egészrésze (a logaritmus alapja M-1)
+
+
+7. Feladat  (operation_cost_examples.ppt 19-21. old.)
+----------  
+Mennyi az I/O költsége az elõzõ feladatbeli két tábla index alapú összekapcsolásának (index-join), 
+ha R-re van indexünk (amit végig a memóriában tartunk), R nem nyaláboltan van tárolva és
+a) V(R,A) = 1000000    -> B(S) + T(S) * T(R)/V(R,A)
+b) V,R,A) = 10000      -> B(S) + T(S) * T(R)/V(R,A) 
+

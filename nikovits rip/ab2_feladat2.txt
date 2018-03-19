@@ -1,0 +1,100 @@
+Egyéb objektumok (szinonima, nézet, szekvencia, adatbázis-kapcsoló)
+----------------
+(DBA_SYNONYMS, DBA_VIEWS, DBA_SEQUENCES, DBA_DB_LINKS)
+
+------------------------------------------------------------------------------
+Adjuk ki az alábbi utasítást (ARAMIS adatbázisban)
+  SELECT * FROM sz1;
+majd derítsük ki, hogy kinek melyik tábláját kérdeztük le. 
+(Ha esetleg nézettel találkozunk, azt is fejtsük ki, hogy az mit kérdez le.)
+------------------------------------------------------------------------------
+Hozzunk létre egy szekvenciát, amelyik az osztály azonosítókat fogja generálni
+a számunkra. Minden osztály azonosító a 10-nek többszöröse legyen.
+Vigyünk fel 3 új osztályt és osztályonként minimum 3 dolgozót a táblákba. 
+Az osztály azonosítókat a szekvencia segítségével állítsuk elõ, és ezt tegyük
+be a táblába. (Vagyis ne kézzel írjuk be a 10, 20, 30 ... stb. azonosítót.)
+A felvitel után módosítsuk a 10-es osztály azonosítóját a következõ érvényes (generált)
+osztály azonosítóra. (Itt is a szekvencia segítségével adjuk meg, hogy mi lesz a 
+következõ azonosító.) A 10-es osztály dolgozóinak az osztályazonosító ertékét is 
+módosítsuk az új értékre.
+-------------------------------------------------------------------------------
+Hozzunk létre adatbázis-kapcsolót (database link) az ULLMAN adatbázisban,
+amelyik a másik (ARAMIS) adatbázisra mutat. 
+CREATE DATABASE LINK aramis CONNECT TO felhasznalo IDENTIFIED BY jelszo
+USING 'aramis';
+Ennek segítségével adjuk meg a következõ lekérdezéseket. 
+A lekérdezések alapjául szolgáló táblák:
+
+NIKOVITS.VILAG_ORSZAGAI   ULLMAN adatbázis
+NIKOVITS.FOLYOK           ARAMIS adatbázis
+
+Az országok egyedi azonosítója a TLD (Top Level Domain) oszlop.
+Az ország hivatalos nyelveit vesszõkkel elválasztva a NYELV oszlop tartalmazza.
+A GDP (Gross Domestic Product -> hazai bruttó össztermék) dollárban van megadva.
+A folyók egyedi azonosítója a NEV oszlop.
+A folyók vízhozama m3/s-ban van megadva, a vízgyûjtõ területük km2-ben.
+A folyó által érintett országok azonosítóit (TLD) a forrástól a torkolatig 
+(megfelelõ sorrendben vesszõkkel elválasztva) az ORSZAGOK oszlop tartalmazza.
+A FORRAS_ORSZAG és TORKOLAT_ORSZAG hasonló módon a megfelelõ országok azonosítóit
+tartalmazza. (Vigyázat!!! egy folyó torkolata országhatárra is eshet, pl. Duna)
+
+
+- Adjuk meg azoknak az országoknak a nevét, amelyeket a Mekong nevû folyó érint.
+
+-* Adjuk meg azoknak az országoknak a nevét, amelyeket a Mekong nevû folyó érint.
+   Most az országok nevét a megfelelõ sorrendben (folyásirányban) adjuk meg.
+---------------------------------------------------------------------------------
+
+
+Adattárolással kapcsolatos fogalmak
+-----------------------------------
+(DBA_TABLES, DBA_DATA_FILES, DBA_TEMP_FILES, DBA_TABLESPACES, DBA_SEGMENTS, DBA_EXTENTS, DBA_FREE_SPACE)
+
+Adjuk meg az adatbázishoz tartozó adatfile-ok (és temporális fájlok) nevét és méretét
+méret szerint csökkenõ sorrendben.
+
+Adjuk meg, hogy milyen tablaterek vannak letrehozva az adatbazisban,
+az egyes tablaterek hany adatfajlbol allnak, es mekkora az osszmeretuk.
+(tablater_nev, fajlok_szama, osszmeret)
+!!! Vigyázat, van temporális táblatér is.
+
+Mekkora az adatblokkok merete a USERS táblatéren?
+
+Van-e olyan táblatér, amelynek nincs DBA_DATA_FILES-beli adatfájlja?
+Ennek adatai hol tárolódnak? -> DBA_TEMP_FILES
+
+Melyik a legnagyobb méretû tábla szegmens az adatbázisban (a tulajdonost is adjuk meg) 
+és hány extensbõl áll? (A particionált táblákat most ne vegyük figyelembe.)
+
+Melyik a legnagyobb meretû index szegmens az adatbázisban és hány blokkból áll?
+(A particionalt indexeket most ne vegyuk figyelembe.)
+
+Adjuk meg adatfájlonkent, hogy az egyes adatfájlokban mennyi a foglalt 
+hely osszesen (írassuk ki a fájlok méretét is).
+
+Melyik ket felhasznalo objektumai foglalnak osszesen a legtobb helyet az adatbazisban?
+Vagyis ki foglal a legtöbb helyet, és ki a második legtöbbet?
+
+Hány extens van a 'users01.dbf' adatfájlban? Mekkora ezek összmérete?
+Hány összefüggõ szabad terület van a 'users01.dbf' adatfájlban? Mekkora ezek összmérete?
+Hány százalékban foglalt a 'users01.dbf' adatfájl?
+
+Van-e a NIKOVITS felhasználónak olyan táblája, amelyik több adatfájlban is foglal helyet? (Aramis)
+
+Válasszunk ki a fenti táblákból egyet (pl. tabla_123) és adjuk meg, hogy ez a 
+tábla mely adatfájlokban foglal helyet.
+
+Melyik táblatéren van az ORAUSER felhasználó dolgozo táblája?
+
+Melyik táblatéren van a NIKOVITS felhasználó ELADASOK táblája? (Miért lesz null?)
+
+-----------------------------------------------------------------------
+Írjunk meg egy PLSQL procedúrát, amelyik a paraméterül kapott felhasználónévre kiírja 
+a felhasználó legrégebben létrehozott tábláját, annak méretét byte-okban, valamint a létrehozás
+dátumat.
+CREATE OR REPLACE PROCEDURE regi_tabla(p_user VARCHAR2) IS 
+...
+SET SERVEROUTPUT ON
+EXECUTE regi_tabla('SH');
+-----------------------------------------------------------------------
+

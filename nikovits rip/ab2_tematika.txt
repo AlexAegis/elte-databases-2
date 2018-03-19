@@ -1,0 +1,72 @@
+Adatbázisok 2 gyakorlat tematika 2017/2018 II. félév
+
+1. gyakorlat
+------------
+Követelmények ismertetése. (ab2_kovetelmeny.txt)
+Az adatbázisok elérésének technikai kérdései. (http://people.inf.elte.hu/nikovits/adatbazis_eleres.txt)
+Kliens programok és azok beállítása. Adatbázisbeli objektumok (tábla, nézet, index, … stb.), 
+séma és nem séma objektumok. A séma és a user fogalmak kapcsolata. Hivatkozás egy 
+adatbázis-objektumra. A rendszerkatalógus elemei. (USER_, ALL_, DBA_) 
+Melyik sémában vannak a katalógus elemei? A SYS és SYSTEM felhasználók. 
+Katalógus táblák megkeresése a katalógusban (DBA_OBJECTS), és a dokumentációban (Reference). 
+Egy tábla oszlopainak lehetséges típusai, DEFAULT értékek. 
+(ab2_feladat1.txt)
+Átnézendõ: 01_Oracle_architecture.ppt 
+Nézzünk egy érdekes példát a futásidõkre: futas_tesztek.txt
+
+2. gyakorlat
+------------
+PL/SQL ismétlés az Adatbázisok 1 gyakorlat alapján: 
+  http://people.inf.elte.hu/nikovits/AB2/PLSQL/
+Mennyi helyet foglal el egy objektum, ha egyáltalán foglal? (tábla, nézet) 
+DATA_OBJECT_ID oszlop jelentõsége a DBA_OBJECTS katalógusban. 
+(ab2_oracle.docx) 
+Szinonimák (publikus és nem publikus), szekvenciák, adatbázis-kapcsolat. 
+Hivatkozás távoli objektumra (adatbázis kapcsolat, elosztott adatbázis). 
+Létrehozásuk, használatuk, és tulajdonságaik megkeresése a katalógusban. 
+Adattárolással kapcsolatos fogalmak: Blokk, Extens, Szegmens, Adatfájl, Táblatér. 
+Ezek egymáshoz való viszonya.  (Oracle_storage.pptx, Select_vegrehajtas.pptx, Oracle_concepts.docx)
+Szegmensek típusai: Tábla, Index, Cluster, LOB, Partíció, Temporális stb. 
+Lekérdezések a katalógusból az adattárolással kapcsolatos fogalmakra vonatkozóan. 
+(adatszotar_nezetek.txt, ab2_feladat2.txt)
+
+3. gyakorlat
+------------
+Kiterjeszthetõ tördelõtáblázat, beszúrás kiterjeszthetõ tördelõtáblázatba.
+Lineáris tördelõtáblázat, beszúrás lineáris tördelõtáblázatba (UW_dinamikus_tordeles.doc).
+A sorazonosító (ROWID) adattípus és pszeudo oszlop. A Rowid részei: OOOOOOFFFBBBBBBRRR. 
+A DBMS_ROWID package legfontosabb függvényei. DATA_OBJECT_ID, RELATIVE_FNO kinyerése a sorazonosítóból. 
+A tábla által lefoglalt hely és a táblabeli adatok által ténylegesen foglalt blokkok vizsgálata 
+és a kettõ közötti különbség. Egy további példa a ROWID használatára. 
+(zh_segitseg.txt, ab2_feladat3.txt)
+
+4. gyakorlat
+------------
+B+ fa, beszúrás B+ fába (UW_b_fa.doc, B_fa_B_plus_fa.ppt). 
+Bitmap index, Bitvektorok tömörítése szakaszhossz kódolással. 
+(Bitmap_index.ppt, UW_szakaszhossz_kodolas.doc)
+Indexek létrehozása és tulajdonságai az Oracle-ben. (cr_index.txt)
+További hely lefoglalása manuálisan a tábla számára. 
+Az adatblokk szerkezete (fejléc, sorok, mezõk, túlcsordulási blokkok). 
+(zh_segitseg.txt, ab2_oracle.docx, ab2_feladat4.txt)
+
+5. gyakorlat
+------------
+Speciálisan tárolt táblák az Oracle-ben: index-szervezett tábla, klaszteren levõ tábla, 
+partícionált tábla. (ab2_spec_tablak.ppt, cr_part_table.txt, cr_cluster.txt, ab2_oracle.docx)
+Az eddigi Oracle fogalmak a dokumentációból angolul összegyûjtve. (Oracle_concepts2.docx)
+Partícionált index létrehozása. (cr_part_index.txt)
+Dinamikus SQL utasítások futtatása PL/SQL-ben. (pl_dinamikusSQL.txt)
+(ab2_feladat5.txt)
+
+6. gyakorlat
+------------
+A lekérdezések végrehajtásának áttekintése. (Query_proc.ppt)
+Táblák, indexek méretének kiszámolása, lekérdezés eredmények méretének becslése, mûveleti 
+költségek kiszámolása. (optimization.ppt, output_estimate.ppt, operation_cost_examples.ppt)
+(ab2_feladat6.txt)
+
+7. gyakorlat
+------------
+1. zh
+

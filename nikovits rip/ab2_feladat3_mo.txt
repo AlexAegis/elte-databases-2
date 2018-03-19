@@ -1,0 +1,179 @@
+ROWID adattípus formátuma és jelentése (lásd még DBMS_ROWID package)
+--------------------------------------------------------------------
+
+18 karakteren irodik ki, a kovetkezo formaban: OOOOOOFFFBBBBBBRRR
+OOOOOO -  az objektum azonositoja (egészen pontosan az úgynevezett adatobjektum azonosítója)
+FFF    -  fajl azonositoja (tablateren beluli relativ sorszam)
+BBBBBB -  blokk azonosito (a fajlon beluli sorszam)
+RRR    -  sor azonosito (a blokkon beluli sorszam)
+
+A ROWID megjeleniteskor 64-es alapu kodolasban jelenik meg (Base64). 
+Az egyes szamoknak (0-63) a következo karakterek felelnek meg:
+A-Z -> (0-25), a-z -> (26-51), 0-9 -> (52-61), '+' -> (62), '/' -> (63)
+
+Pl. 'AAAAAB' -> 000001
+
+
+A NIKOVITS felhasználó CIKK táblája hány blokkot foglal le az adatbázisban?
+(Vagyis hány olyan blokk van, ami ehhez a táblához van rendelve és így
+azok már más táblákhoz nem adhatók hozzá?)
+------------------------------------------
+SELECT bytes, blocks FROM dba_segments 
+WHERE owner='NIKOVITS' AND segment_name='CIKK' AND segment_type='TABLE';
+
+A NIKOVITS felhasználó CIKK táblájának adatai hány blokkban helyezkednek el?
+(Vagyis a tábla sorai ténylegesen hány blokkban vannak tárolva?)
+!!! -> Ez a kérdés nem ugyanaz mint az elõzõ.
+---------------------------------------------
+SELECT DISTINCT dbms_rowid.rowid_relative_fno(ROWID) fajl,
+       dbms_rowid.rowid_block_number(ROWID) blokk
+FROM nikovits.cikk;
+
+Vagy rögtön megszámolva az elõ lekérdezés által felsorolt adatblokkokat:
+------------------------------------------------------------------------ 
+SELECT count(*) FROM
+(SELECT DISTINCT dbms_rowid.rowid_relative_fno(ROWID) fajl,
+        dbms_rowid.rowid_block_number(ROWID) blokk
+ FROM nikovits.cikk);
+
+Az egyes blokkokban hány sor van?
+---------------------------------
+SELECT dbms_rowid.rowid_relative_fno(ROWID) fajl,
+       dbms_rowid.rowid_block_number(ROWID) blokk, count(*)
+FROM nikovits.cikk
+GROUP BY dbms_rowid.rowid_relative_fno(ROWID), dbms_rowid.rowid_block_number(ROWID);
+
+Hozzunk létre egy táblát az EXAMPLE táblatéren, amelynek szerkezete azonos a nikovits.cikk 
+tábláéval és pontosan 128 KB helyet foglal az adatbázisban. Foglaljunk le manuálisan további 
+128 KB helyet a táblához. Vigyünk fel sorokat addig, amig az elsõ blokk tele nem 
+lesz, és 1 további sora lesz még a táblának a második blokkban.
+(A felvitelt plsql programmal végezzük és ne kézzel, mert úgy kicsit sokáig tartana.)
+További segítség és példák találhatók az ab2_oracle.doc állományban.
+-------------------------------------------------------------------------------------
+ALTER SESSION SET deferred_segment_creation = FALSE;
+
+A fenti utasítás egy inicializációs paraméter értékét változtatja meg. Ha a paraméter 
+értéke TRUE lenne, akkor csak késleltetve, az elsõ beszúráskor jönne létre a szegmens.
+Az inicializációs paraméter(ek) aktuális értékét megnézhetjük session szinten:
+-> SELECT * FROM v$parameter WHERE name like '%deferred%segment%';  
+illetve instance szinten:
+-> SELECT * FROM v$system_parameter WHERE name like '%deferred%segment%';
+
+-- Létrehozzuk a táblát a megfelelõ helyfoglalási paraméterekkel:
+CREATE TABLE proba
+TABLESPACE example
+STORAGE (INITIAL 128K  MINEXTENTS 1  MAXEXTENTS 200  PCTINCREASE 0)
+AS 
+SELECT * FROM nikovits.cikk WHERE 1=2;
+
+-- Újabb extenst foglalunk le a tábla számára (a táblatér egy létezõ fájlja legyen !!!)
+ALTER TABLE proba ALLOCATE EXTENT 
+(SIZE 128K DATAFILE '/u01/app/oracle/oradata/eszakigrid97/example01.dbf');
+
+
+-- Majd egyesével sorokat szúrunk be, és mindig megnézzük, hogy van-e már 2 blokk
+DECLARE
+ v_blokkszam NUMBER := 0; -- nemüres blokkok száma 
+ v_sorsz NUMBER := 1;
+BEGIN
+  WHILE v_blokkszam < 2 AND v_sorsz < 1000 LOOP     
+    INSERT INTO proba SELECT * FROM nikovits.cikk WHERE ckod=v_sorsz;
+    v_sorsz := v_sorsz + 1;
+    SELECT COUNT(DISTINCT dbms_rowid.rowid_relative_fno(ROWID)||
+                dbms_rowid.rowid_block_number(ROWID)) INTO v_blokkszam
+    FROM nikovits.proba;
+  END LOOP;
+  COMMIT;
+END;
+
+-- A végén ellenõrizhetjük, hogy tényleg 2 blokkban vannak a sorok:
+SELECT dbms_rowid.rowid_relative_fno(ROWID) fajl,
+       dbms_rowid.rowid_block_number(ROWID) blokk, count(*)
+FROM nikovits.proba
+GROUP BY dbms_rowid.rowid_relative_fno(ROWID), dbms_rowid.rowid_block_number(ROWID);
+
+
+Próbáljuk ki az elõzõt ismét, de most a PCTFREE értéket állítsuk 40-re. 
+Mindkét esetben ellenõrizzük is, hogy a sorok tényleg két blokkban vannak,
+és a másodikban csak egyetlen sor van.
+--------------------------------------------------------------------------
+DROP TABLE proba;
+CREATE TABLE proba
+TABLESPACE example PCTFREE 40
+STORAGE (INITIAL 128K  MINEXTENTS 1  MAXEXTENTS 200  PCTINCREASE 0)
+AS 
+SELECT * FROM nikovits.cikk WHERE 1=2;
+
+A PL/SQL programot ismét lefuttatva, látható, hogy most kevesebb sor fér el a 2 blokkban.
+
+Állapítsuk meg, hogy a SH.SALES táblának a következõ adatokkal azonosított sora
+(time_id='1998.01.10', prod_id=13, cust_id=2380) melyik adatfájlban van,
+azon belül melyik blokkban, és a blokkon belül hányadik a sor?
+--------------------------------------------------------------
+SELECT  dbms_rowid.rowid_object(ROWID) adatobj, 
+        dbms_rowid.rowid_relative_fno(ROWID) fajl,
+        dbms_rowid.rowid_block_number(ROWID) blokk,
+        dbms_rowid.rowid_row_number(ROWID) sor
+FROM sh.sales 
+WHERE time_id=to_date('1998.01.10', 'yyyy.mm.dd') AND prod_id=13 AND cust_id=2380;
+
+Az elõzõ feladatban megadott sor melyik partícióban van?
+Mennyi az objektum azonosítója, és ez milyen objektum?
+-------------------------------------------------------
+SELECT  o.object_name, o.subobject_name, o.object_type,o.data_object_id
+FROM sh.sales s, dba_objects o
+WHERE dbms_rowid.rowid_object(s.ROWID) = o.data_object_id 
+AND time_id=to_date('1998.01.10', 'yyyy.mm.dd') AND prod_id=13 AND cust_id=2380;
+
+-----------------------------------------------------------------------
+Írjunk meg egy PLSQL procedúrát, amelyik kiírja, hogy a NIKOVITS.TABLA_123 táblának melyik 
+adatblokkjában hány sor van. (file_id, blokk_id, darab)
+CREATE OR REPLACE PROCEDURE num_of_rows IS 
+...
+SET SERVEROUTPUT ON
+EXECUTE num_of_rows();
+-------------------------------------------------------
+create or replace procedure num_of_rows IS
+ cnt NUMBER;
+BEGIN 
+ FOR rec IN (select file_id, block_id, blocks from dba_extents 
+             where owner='NIKOVITS' and segment_name='TABLA_123' order by 1,2,3)
+ LOOP
+  FOR i in 1..rec.blocks LOOP
+   SELECT count(*) into cnt FROM nikovits.tabla_123 
+   WHERE dbms_rowid.rowid_relative_fno(ROWID) = rec.file_id
+   AND dbms_rowid.rowid_block_number(ROWID) = rec.block_id+i-1;
+   dbms_output.put_line(rec.file_id||'.'||to_char(rec.block_id+i-1)||'->'||cnt);
+  END LOOP;
+ END LOOP;
+END;
+========================================================
+
+HÁZI FELADAT (kicsit több idõt igényel, mint a gyakorlaton megoldottak)
+------------
+Irjunk meg egy PL/SQL fuggvenyt, ami a  ROWID 64-es kodolasanak megfelelo
+szamot adja vissza. A fuggveny parametere egy karakterlanc, eredmenye 
+pedig a kodolt numerikus ertek legyen. (Eleg ha a fuggveny maximum 6 
+hosszu, helyesen kodolt karakterlancokra mukodik, hosszabb karakterlancra,
+vagy rosszul kodolt parameterre adjon vissza -1-et.)
+Ennek a fv-nek a segitsegevel adjuk meg egy tablabeli sor pontos fizikai 
+elhelyezkedeset. (Melyik fajl, melyik blokk, melyik sora) Peldaul az
+ORAUSER.DOLGOZO tabla azon sorara, ahol a dolgozo neve 'KING'.
+
+
+További példák a ROWID használatára
+-----------------------------------
+Hozzunk letre egy EXCEPTIONS nevu tablat az utlexcpt.sql nevu script 
+alapjan, majd egy olyan constraintet, amelyet a tablaban levo sorok
+kozul nehany megsert. (Emiatt a constraint letrehozasa hibauzenetet
+kell, hogy eredmenyezzen.) Allapitsuk meg az EXCEPTIONS nevu tabla 
+segitsegevel, hogy mely sorok sertik meg az imenti constraintet. 
+
+Az utlexcpt.sql nevû script a következõ utasítást tartalmazza:
+
+CREATE TABLE exceptions(row_id rowid, owner varchar2(30),
+    table_name varchar2(30), constraint varchar2(30));
+
+
+------------------------------------------------------------------------
+A fenti megoldását lásd az ab2_oracle.doc állományban, kb. a 10. oldalon

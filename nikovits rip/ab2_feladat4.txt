@@ -1,0 +1,127 @@
+B+ fa index
+-----------
+Az alábbi feladatban a tankönyben leírt és az elõadáson is bemutatott algoritmussal 
+építsünk fel egy B+ fát!
+
+Tegyük fel, hogy egy B+ fa blokkjaiba 3 kulcs fér el plusz 4 mutató. A kulcsok 
+különbözõek. Szúrjuk be a B+ fába az alábbi kulcsértékeket a megadott sorrendben:
+39,15,50,70,79,83,72,43,75,45
+Adjuk meg a B+ fa minden olyan állapotát, amikor egy csomópont kettéosztására volt szükség.
+Például, az elsõ kettéosztás utáni állapot:
+                          50
+                    15|39    50|70
+
+Egy kis segítség:
+----------------
+
+Levél csúcs kettéosztásakor minden kulcsot megõrzünk a régi és az új (szomszédos) csúcsban.
+1 új kulcs-mutató párt küldünk felfelé a szülõ csúcsba, amit ott kell elhelyezni.
+
+Belsõ csúcs kettéosztásakor (N,M csúcsra) a mutatók elsõ fele az N-be kerül, a második az M-be.
+A kulcsok elsõ fele az N-be kerül a második fele az M-be, de középen kimarad egy kulcs,
+ami az M-en keresztül (elsõ gyermekén keresztül) elérhetõ legkisebb kulcsot tartalmazza. 
+Ez nem kerül sem N-be, sem M-be, hanem ez megy fölfelé N és M közös szülõjébe az M-re mutató
+mutatóval együtt.
+
+
+Bitmap index
+------------
+
+DKOD DNEV   FIZETES  FOGLALKOZAS  BELEPES  OAZON
+---------------------------------------------------
+1    SMITH     800   CLERK        1980     20   
+2    ALLEN    1600   SALESMAN     1981     30	   
+3    WARD     1250   SALESMAN     1981     30	   
+4    JONES    2975   MANAGER      1981     20	   
+5    MARTIN   1250   SALESMAN     1981     30	   
+6    BLAKE    2850   MANAGER      1981     30	   
+7    CLARK    2450   MANAGER      1981     10	   
+8    SCOTT    3000   ANALYST      1982     20	   
+9    KING     5000   PRESIDENT    1981     10	   
+10   TURNER   1500   SALESMAN     1981     30	   
+11   ADAMS    1100   CLERK        1983     20	   
+12   JAMES     950   CLERK        1981     30	   
+13   FORD     3000   ANALYST      1981     20	   
+14   MILLER   1300   CLERK        1982     10	 
+
+
+Készítsen bitmap indexet a dolgozó tábla OAZON oszlopára és adja meg a bitvektorokat.
+
+Tegyük fel, hogy a FOGLALKOZAS, a BELEPES és az OAZON oszlopokra létezik bitmap index (3 index).
+Készítsük el az alábbi lekérdezésekhez szükséges bitvektorokat, majd végezzük el rajtuk a szükséges 
+mûveleteket, és adjuk meg azt az elõállt bitvektort, ami alapján a végeredmény sorok megkaphatók.
+Ellenõrzésképpen adjuk meg a lekérdezést SQL-ben is.
+ 
+- Adjuk meg azoknak a dolgozóknak a nevét, akik 1981-ben léptek be és a foglalkozásuk hivatalnok (CLERK),
+  vagy a 20-as osztályon dolgoznak és a foglalkozásuk MANAGER.
+
+- Adjuk meg azoknak a dolgozóknak a nevét, akik nem 1981-ben léptek be és a 10-es vagy a 30-as 
+  osztályon dolgoznak.
+
+Tömörítse a következõ bitvektort a szakaszhossz kódolással. (lásd UW_szakaszhossz_kodolas.doc)
+0000000000000000000000010000000101
+
+Fejtsük vissza a következõ, szakaszhossz kódolással tömörített bitvektort:
+1111010101001011
+
+
+
+Oracle indexek  
+--------------
+(DBA_INDEXES, DBA_IND_COLUMNS, DBA_IND_EXPRESSIONS)
+
+Hozzunk létre egy vagy több táblához több különbözõ indexet, legyen köztük több oszlopos,
+csökkenõ sorrendû, bitmap, függvény alapú stb. (Ehhez használhatók az ab2_oracle.doc
+állományban szereplõ példák, vagy a cr_index.txt-ben szereplõk.)
+Az alábbi lekérdezésekkel megállapítjuk az iménti indexeknek mindenféle tulajdonságait a 
+katalógusokból.
+
+Adjuk meg azoknak a tábláknak a nevét, amelyeknek van csökkenõ sorrendben indexelt oszlopa.
+
+Miért ilyen furcsa az oszlopnév?
+-> lásd DBA_IND_EXPRESSIONS
+
+Adjuk meg azoknak az indexeknek a nevét, amelyek legalább 9 oszloposak.
+(Vagyis a táblának legalább 9 oszlopát vagy egyéb kifejezését indexelik.)
+
+Adjuk meg az SH.SALES táblára létrehozott bitmap indexek nevét.
+
+Adjuk meg azon kétoszlopos indexek nevét és tulajdonosát, amelyeknek legalább 
+az egyik kifejezése függvény alapú .
+
+Adjuk meg az egyikükre, pl. az OE tulajdonában lévõre, hogy milyen kifejezések szerint 
+vannak indexelve a soraik. (Vagyis mi a függveny, ami alapján a bejegyzések készülnek.)
+
+Adjuk meg a NIKOVITS felhasználó tulajdonában levõ index-szervezett táblák nevét.
+(Melyik táblatéren vannak ezek a táblák? -> miért nem látható?)
+
+Adjuk meg a fenti táblák index részét, és azt, hogy ezek az index részek (szegmensek) 
+melyik táblatéren vannak?
+
+Keressük meg a szegmensek között az elõzõ táblákat illetve indexeket, és adjuk
+meg a méretüket.
+
+Keressük meg az adatbázis objektumok között a fenti táblákat és indexeket, és adjuk
+meg az objektum azonosítójukat és adatobjektum azonosítójukat (DATA_OBJECT_ID).
+
+Adjuk meg a fenti táblák túlcsordulási részeit (ha van).
+
+Keressük meg a túlcsordulási részeket a szegmensek között és adjuk meg a méretüket.
+Keressük meg az objektum azonosítóikat és az adatobjektum azonosítóikat is.
+
+-----------------------------------------------------------------------
+Írjunk meg egy plsql procedúrát, amelyik a paraméterül kapott index szervezett 
+tábláról kiírja a tábla méretét. 
+Vigyázzunk, mert a táblának lehet index és túlcsordulási szegmense is!
+CREATE OR REPLACE PROCEDURE iot_size(p_owner VARCHAR2, p_table VARCHAR2) IS 
+...
+SET SERVEROUTPUT ON
+EXECUTE iot_size('nikovits', 'cikk_iot');
+-----------------------------------------------------------------------
+
+Adjuk meg azokat az index szervezett táblákat, amelyeknek pontosan 
+1 dátum típusú oszlopa van.
+
+Adjuk meg, hogy mennyi a blokkolási faktora a következõ tábláknak: NIKOVITS.CIKK, SH.CUSTOMERS
+Az üres blokkokat ne vegyük figyelembe, tehát a blokkolási faktor (a blokkban lévõ sorok átlagos száma) 
+most a sorok_száma/nemüres_blokkok_száma.
