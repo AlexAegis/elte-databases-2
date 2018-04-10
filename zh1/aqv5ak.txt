@@ -1,0 +1,36 @@
+-- 1. feladat
+
+select distinct OWNER from DBA_OBJECTS
+  where OBJECT_NAME in
+    (select TABLE_NAME from DBA_INDEXES
+      where INDEX_TYPE = 'NORMAL'
+        group by TABLE_NAME
+          having count(INDEX_NAME) >= 2
+      intersect
+      select OBJECT_NAME from DBA_OBJECTS
+        where OBJECT_TYPE = 'TABLE PARTITION');
+        
+-- 2. feladat
+
+select OWNER from DBA_SEGMENTS where BYTES = 
+  (select max(BYTES) from DBA_SEGMENTS
+    where SEGMENT_TYPE = 'INDEX');
+    
+-- 3. feladat
+
+select TABLE_NAME from DBA_TAB_COLUMNS
+  where DATA_TYPE = 'DATE' and COLUMN_ID = 1
+intersect
+select TABLE_NAME from DBA_TAB_COLUMNS t
+  where DATA_TYPE = 'DATE' and COLUMN_ID >
+  (select max(COLUMN_ID)-1 from DBA_TAB_COLUMNS d
+    where t.TABLE_NAME = d.TABLE_NAME);
+    
+-- 4. feladat
+
+select TABLESPACE_NAME from
+  (select TABLESPACE_NAME, count(*) d from DBA_SEGMENTS
+    where SEGMENT_TYPE = 'TABLE'
+      group by TABLESPACE_NAME
+        order by d asc)
+  where ROWNUM = 1;
