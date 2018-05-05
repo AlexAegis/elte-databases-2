@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="aqv5ak@ullman.inf.elte.hu" uuid="7191948f-deab-425b-bf7c-55bb9296585b">
+      <database-info product="Oracle" version="Oracle Database 12c Enterprise Edition Release 12.1.0.2.0 - 64bit Production&#10;With the Partitioning, OLAP, Advanced Analytics and Real Application Testing options" jdbc-version="4.0" driver-name="Oracle JDBC driver" driver-version="12.1.0.2.0">
+        <extra-name-characters>$#</extra-name-characters>
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="upper" quoted-identifiers="exact" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>aqv5ak</user-name>
+      <introspection-schemas>*:AQV5AK</introspection-schemas>
+      <ssh-properties>
+        <enabled>false</enabled>
+        <proxy-host>pandora.inf.elte.hu</proxy-host>
+        <proxy-port>22</proxy-port>
+        <secret-storage>master_key</secret-storage>
+        <user>alexaegis</user>
+        <use-password>true</use-password>
+        <auth-type>PASSWORD</auth-type>
+      </ssh-properties>
+    </data-source>
+    <data-source name="aqv5ak@aramis.inf.elte.hu" uuid="e965d176-e828-43fd-b605-c0d63ba5e7be">
+      <database-info product="Oracle" version="Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production&#10;With the Partitioning, OLAP, Data Mining and Real Application Testing options" jdbc-version="4.0" driver-name="Oracle JDBC driver" driver-version="12.1.0.2.0">
+        <extra-name-characters>$#</extra-name-characters>
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="upper" quoted-identifiers="exact" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>aqv5ak</user-name>
+      <introspection-schemas>*:AQV5AK</introspection-schemas>
+      <ssh-properties>
+        <enabled>false</enabled>
+        <proxy-host>pandora.inf.elte.hu</proxy-host>
+        <proxy-port>22</proxy-port>
+        <secret-storage>master_key</secret-storage>
+        <user>alexaegis</user>
+        <use-password>true</use-password>
+        <auth-type>PASSWORD</auth-type>
+      </ssh-properties>
+    </data-source>
+    <data-source name="alexaegis@mysql.caesar.elte.hu" uuid="6a720417-d7db-43c6-95e6-4d8a2753b905">
+      <database-info product="MySQL" version="5.5.60-0+deb7u1" jdbc-version="4.0" driver-name="MySQL Connector Java" driver-version="mysql-connector-java-5.1.46 ( Revision: 9cc87a48e75c2d2e87c1a293b2862ce651cb256e )">
+        <extra-name-characters>#@</extra-name-characters>
+        <identifier-quote-string>`</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="exact" quoted-identifiers="exact" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>alexaegis</user-name>
+      <introspection-schemas>*:</introspection-schemas>
+      <ssh-properties>
+        <enabled>true</enabled>
+        <proxy-host>caesar.elte.hu</proxy-host>
+        <proxy-port>22</proxy-port>
+        <secret-storage>master_key</secret-storage>
+        <user>alexaegis</user>
+        <use-password>true</use-password>
+        <auth-type>PASSWORD</auth-type>
+      </ssh-properties>
+    </data-source>
+  </component>
+</project>
