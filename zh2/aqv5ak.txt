@@ -2,16 +2,24 @@
 -- 1. feladat
 -- select * from nikovits.szallit natural join nikovits.cikk where pkod = 10;
 -- 1. feladat a) rész
-explain plan for select /*+ index(szallit) index(cikk) */ * 
+explain plan for 
+select /*+ index(szallit) index(cikk) */ * 
 from nikovits.szallit szallit 
 natural join nikovits.cikk cikk where pkod=10;
 select plan_table_output from table(dbms_xplan.display('plan_table', null, 'serial'));
 -- 1. feladat b) rész
-explain plan for select /*+ no_index(szallit) index(cikk) */ * 
+explain plan for 
+select /*+ no_index(szallit) index(cikk) */ * 
 from nikovits.szallit szallit 
 natural join nikovits.cikk cikk where pkod=10;
 select plan_table_output from table(dbms_xplan.display('plan_table', null, 'serial'));
 -- 2. feladat a) rész
+explain plan for
+select /*+ MERGE_SJ */ * 
+from nikovits.szallit 
+join nikovits.szallito x on szallit.szkod = x.szkod 
+where mennyiseg > 0;
+select plan_table_output from table(dbms_xplan.display('plan_table', null, 'serial'));
 -- 2. feladat b) rész
 explain plan for 
 select /*+USE_NL(szallit, cikk) index(szallit)*/ sum(szkod)
